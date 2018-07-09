@@ -7,13 +7,17 @@
 
 ## :memo: Description
 
+Look at an example of `mediumorphose`.
+
+Convert the following code block
+
 ```go
 func main() {
     fmt.Println("Hello, mediumorphose!")
 }
-```
 
-↓
+```
+into the following embedded Gist!
 
 <img width="712" alt="screenshot 2018-07-09 16 52 12" src="https://user-images.githubusercontent.com/21333876/42437569-764fc38e-8398-11e8-8ff9-a644fb652388.png">
 
