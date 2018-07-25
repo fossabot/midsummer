@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/google/go-github/github"
 	"github.com/micnncim/mediumorphose/gist"
@@ -11,7 +12,8 @@ import (
 )
 
 func main() {
-	g, err := gist.NewClient("09557af82a8d3529b93be7cc7b356cf32c1d9399")
+	token := os.Getenv("GITHUB_ACCESS_TOKEN")
+	g, err := gist.NewClient(token)
 	if err != nil {
 		log.Fatal(err)
 	}
