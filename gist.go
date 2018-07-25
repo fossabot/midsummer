@@ -8,15 +8,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type (
-	Gist struct {
-		Client *github.Client
-	}
-	Snippet struct {
-		Filename string
-		Content  string
-	}
-)
+type Gist struct {
+	Client *github.Client
+}
 
 func NewGistClient(token string) (*Gist, error) {
 	if token == "" {
