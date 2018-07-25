@@ -12,7 +12,7 @@ type Gist struct {
 	Client *github.Client
 }
 
-func NewGistClient(token string) (*Gist, error) {
+func NewClient(token string) (*Gist, error) {
 	if token == "" {
 		return &Gist{}, errors.New("token is missing")
 	}
