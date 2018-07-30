@@ -27,30 +27,6 @@ into the embedded Gist!
 $ go get github.com/micnncim/mediumorphose
 ```
 
-## :rocket: Features
-
-- Feature
-- ...
-
-## :zap: Requirement
-
-- Requirement
-- ...
-
-## :mag: Usage
-
-1. Usage
-1. ...
-
-## :bulb: Example
-
-Example
-
-## :white_check_mark: TODO
-
-- [ ] todo
-- [ ] ...
-
 ## :bust_in_silhouette: Author
 
 [@micnncim](https://twitter.com/micnncim)
