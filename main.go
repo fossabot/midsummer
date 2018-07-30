@@ -19,6 +19,9 @@ func main() {
 	}
 
 	m := markdown.New("example.md")
+	if err := m.ParseTitle(); err != nil {
+		log.Fatal(err)
+	}
 	if err := m.ParseSnippets(); err != nil {
 		log.Fatal(err)
 	}

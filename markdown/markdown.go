@@ -110,9 +110,18 @@ func (m *Markdown) ParseTitle() error {
 	if !strings.HasPrefix(header, "# ") {
 		return errors.New("header is not valid. should start with `# `")
 	}
-
 	header = strings.TrimLeft(header, "# ")
 	m.Title = header
+
+	var content string
+	// scan the rest
+	for scanner.Scan() {
+		content += scanner.Text()
+	}
+
+	if err := ioutil.WriteFile(m.Filename, []byte(content), 0666); err != nil {
+		return err
+	}
 
 	return nil
 }
