@@ -27,6 +27,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/skratchdot/open-golang"
+  packages = ["open"]
+  revision = "75fb7ed4208cf72d323d7d02fd1a5964a7a9073c"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -60,6 +66,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0d2c43a1838dfa54b5fee106244dd7eaadef97b27e87f963fd40f3902520c0b2"
+  inputs-digest = "44055bf4e6f9e6fd11035fe166db9a8c4fa1a910a7e91a49239f44d30253edb1"
   solver-name = "gps-cdcl"
   solver-version = 1
