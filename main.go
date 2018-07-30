@@ -9,25 +9,25 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/micnncim/mediumorphose/gist"
 	"github.com/micnncim/mediumorphose/markdown"
+	"github.com/micnncim/mediumorphose/medium"
 )
 
 func main() {
-	token := os.Getenv("GITHUB_ACCESS_TOKEN")
-	g, err := gist.New(token)
+	g, err := gist.New(os.Getenv("GITHUB_ACCESS_TOKEN"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	m := markdown.New("example.md")
-	if err := m.ParseTitle(); err != nil {
+	md := markdown.New("example.md")
+	if err := md.ParseTitle(); err != nil {
 		log.Fatal(err)
 	}
-	if err := m.ParseSnippets(); err != nil {
+	if err := md.ParseSnippets(); err != nil {
 		log.Fatal(err)
 	}
 
 	var urls []string
-	for _, s := range m.Snippets {
+	for _, s := range md.Snippets {
 		files := map[github.GistFilename]github.GistFile{
 			github.GistFilename(s.Filename): github.GistFile{
 				Content: &s.Content,
@@ -41,7 +41,12 @@ func main() {
 		fmt.Println(*item.HTMLURL)
 	}
 
-	if err := m.Replace(urls...); err != nil {
+	if err := md.Replace(urls...); err != nil {
+		log.Fatal(err)
+	}
+
+	mid := medium.New(os.Getenv("MEDIUM_ACCESS_TOKEN"))
+	if err := mid.Publish(md); err != nil {
 		log.Fatal(err)
 	}
 }
