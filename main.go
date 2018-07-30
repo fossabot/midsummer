@@ -18,8 +18,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	snippets := markdown.Parse("example.md")
-	for _, s := range snippets {
+	m := markdown.New("example.md")
+	if err := m.Parse(); err != nil {
+		log.Fatal(err)
+	}
+
+	var urls []string
+	for _, s := range m.Snippets {
 		files := map[github.GistFilename]github.GistFile{
 			github.GistFilename(s.Filename): github.GistFile{
 				Content: &s.Content,
@@ -29,6 +34,11 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		urls = append(urls, *item.HTMLURL)
 		fmt.Println(*item.HTMLURL)
+	}
+
+	if err := m.Replace(urls...); err != nil {
+		log.Fatal(err)
 	}
 }

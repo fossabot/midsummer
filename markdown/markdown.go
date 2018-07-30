@@ -2,24 +2,34 @@ package markdown
 
 import (
 	"bufio"
-	"log"
+	"errors"
+	"io/ioutil"
 	"os"
 	"strings"
 )
 
-type Snippet struct {
-	Filename string
-	Content  string
+type (
+	Markdown struct {
+		Filename string
+		Snippets []*Snippet
+	}
+	Snippet struct {
+		Filename string
+		Content  string
+	}
+)
+
+func New(filename string) *Markdown {
+	return &Markdown{Filename: filename}
 }
 
-func Parse(filename string) []Snippet {
-	f, err := os.Open(filename)
+func (m *Markdown) Parse() error {
+	f, err := os.Open(m.Filename)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer f.Close()
 
-	var snippets []Snippet
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -47,11 +57,39 @@ func Parse(filename string) []Snippet {
 		for _, c := range code {
 			content += c
 		}
-		snippets = append(snippets, Snippet{
+		m.Snippets = append(m.Snippets, &Snippet{
 			Content:  content,
 			Filename: filename,
 		})
 	}
 
-	return snippets
+	if len(m.Snippets) == 0 {
+		return errors.New("code blocks not exist")
+	}
+	return nil
+}
+
+func (m *Markdown) Replace(urls ...string) error {
+	if len(m.Snippets) == 0 {
+		return errors.New("code blocks not exist")
+	}
+	if len(urls) != len(m.Snippets) {
+		return errors.New("the number of URLs not match that of code blocks")
+	}
+
+	data, err := ioutil.ReadFile(m.Filename)
+	if err != nil {
+		return err
+	}
+	content := string(data)
+
+	for i, s := range m.Snippets {
+		block := "```" + s.Filename + "\n" + s.Content + "\n```"
+		content = strings.Replace(content, block, urls[i], 1)
+	}
+
+	if err := ioutil.WriteFile(m.Filename, []byte(content), 0666); err != nil {
+		return err
+	}
+	return nil
 }
