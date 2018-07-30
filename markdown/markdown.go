@@ -24,7 +24,7 @@ func New(filename string) *Markdown {
 	return &Markdown{Filename: filename}
 }
 
-func (m *Markdown) Parse() error {
+func (m *Markdown) ParseSnippets() error {
 	f, err := os.Open(m.Filename)
 	if err != nil {
 		return err
@@ -113,9 +113,6 @@ func (m *Markdown) ParseTitle() error {
 
 	header = strings.TrimLeft(header, "# ")
 	m.Title = header
-
-	content := strings.Replace()
-	f.Write([]byte)
 
 	return nil
 }
