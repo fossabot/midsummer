@@ -1,10 +1,8 @@
 package markdown
 
 import (
-	"bufio"
 	"errors"
 	"io/ioutil"
-	"os"
 	"strings"
 )
 
@@ -12,38 +10,38 @@ type (
 	Markdown struct {
 		Title    string
 		Filename string
+		Content  string
 		Snippets []*Snippet
 	}
+
 	Snippet struct {
 		Filename string
 		Content  string
 	}
 )
 
-func New(filename string) *Markdown {
-	return &Markdown{Filename: filename}
+func New(filename string) (*Markdown, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Markdown{
+		Filename: filename,
+		Content:  string(data),
+	}, nil
 }
 
 func (m *Markdown) ParseSnippets() error {
-	f, err := os.Open(m.Filename)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if !strings.HasPrefix(line, "```") {
+	content := strings.Split(m.Content, "\n")
+	for _, c := range content {
+		line := string(c)
+		for !strings.HasPrefix(line, "```") {
 			continue
 		}
 		filename := strings.Trim(line, "`")
 		var code []string
-		for scanner.Scan() {
-			line := scanner.Text()
-			if strings.HasPrefix(line, "```") {
-				break
-			}
+		for !strings.HasPrefix(line, "```") {
 			code = append(code, line)
 		}
 
@@ -59,14 +57,33 @@ func (m *Markdown) ParseSnippets() error {
 			content += c
 		}
 		m.Snippets = append(m.Snippets, &Snippet{
-			Content:  content,
 			Filename: filename,
+			Content:  content,
 		})
 	}
 
 	if len(m.Snippets) == 0 {
 		return errors.New("code blocks not exist")
 	}
+	return nil
+}
+
+func (m *Markdown) ParseTitle() error {
+	if m.Content == "" {
+		return errors.New("file content not exist")
+	}
+
+	content := strings.Split(m.Content, "\n")
+	header := content[0]
+	if strings.HasPrefix(header, "# ") {
+		m.Title = strings.Trim(header, "# ")
+	} else {
+		m.Title = header
+	}
+
+	// skip header (title) and buffer new line
+	m.Content = strings.Join(content[2:], "\n")
+
 	return nil
 }
 
@@ -78,49 +95,9 @@ func (m *Markdown) Replace(urls ...string) error {
 		return errors.New("the number of URLs not match that of code blocks")
 	}
 
-	data, err := ioutil.ReadFile(m.Filename)
-	if err != nil {
-		return err
-	}
-	content := string(data)
-
 	for i, s := range m.Snippets {
 		block := "```" + s.Filename + "\n" + s.Content + "\n```"
-		content = strings.Replace(content, block, urls[i], 1)
-	}
-
-	if err := ioutil.WriteFile(m.Filename, []byte(content), 0666); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Markdown) ParseTitle() error {
-	f, err := os.Open(m.Filename)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	if !scanner.Scan() {
-		return errors.New("header not exist")
-	}
-	header := scanner.Text()
-	if !strings.HasPrefix(header, "# ") {
-		return errors.New("header is not valid. should start with `# `")
-	}
-	header = strings.TrimLeft(header, "# ")
-	m.Title = header
-
-	var content string
-	// scan the rest
-	for scanner.Scan() {
-		content += scanner.Text()
-	}
-
-	if err := ioutil.WriteFile(m.Filename, []byte(content), 0666); err != nil {
-		return err
+		m.Content = strings.Replace(m.Content, block, urls[i], 1)
 	}
 
 	return nil
