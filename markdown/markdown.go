@@ -102,3 +102,7 @@ func (m *Markdown) Replace(urls ...string) error {
 
 	return nil
 }
+
+func (m *Markdown) Write() error {
+	return ioutil.WriteFile(m.Filename, []byte(m.Content), 0666)
+}
