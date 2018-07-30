@@ -18,7 +18,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	md := markdown.New("example.md")
+	md, err := markdown.New("example.md")
+	if err != nil {
+		log.Fatal(err)
+	}
 	if err := md.ParseTitle(); err != nil {
 		log.Fatal(err)
 	}
@@ -42,6 +45,9 @@ func main() {
 	}
 
 	if err := md.Replace(urls...); err != nil {
+		log.Fatal(err)
+	}
+	if err := md.Write(); err != nil {
 		log.Fatal(err)
 	}
 

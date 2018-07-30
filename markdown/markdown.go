@@ -34,31 +34,26 @@ func New(filename string) (*Markdown, error) {
 
 func (m *Markdown) ParseSnippets() error {
 	content := strings.Split(m.Content, "\n")
-	for _, c := range content {
-		line := string(c)
-		for !strings.HasPrefix(line, "```") {
+	for i := range content {
+		line := string(content[i])
+		if !strings.HasPrefix(line, "```") {
 			continue
 		}
 		filename := strings.Trim(line, "`")
-		var code []string
-		for !strings.HasPrefix(line, "```") {
-			code = append(code, line)
+		if filename == "" {
+			continue
 		}
 
-		for i := range code {
-			if i == len(code)-1 {
+		var n int
+		for {
+			if strings.HasPrefix(string(content[i+n+1]), "```") {
 				break
 			}
-			code[i] += "\n"
-		}
-
-		var content string
-		for _, c := range code {
-			content += c
+			n++
 		}
 		m.Snippets = append(m.Snippets, &Snippet{
 			Filename: filename,
-			Content:  content,
+			Content:  strings.Join(content[i+1:i+n+1], "\n"),
 		})
 	}
 
@@ -81,7 +76,7 @@ func (m *Markdown) ParseTitle() error {
 		m.Title = header
 	}
 
-	// skip header (title) and buffer new line
+	// omit header (title) and buffer new line
 	m.Content = strings.Join(content[2:], "\n")
 
 	return nil
@@ -104,5 +99,5 @@ func (m *Markdown) Replace(urls ...string) error {
 }
 
 func (m *Markdown) Write() error {
-	return ioutil.WriteFile(m.Filename, []byte(m.Content), 0666)
+	return ioutil.WriteFile("m-"+m.Filename, []byte(m.Content), 0666)
 }
