@@ -9,7 +9,7 @@
 
 Look at an example of `mediumorphose`.
 
-Convert the following code block
+Convert the code block
 
 ```go
 func main() {
@@ -17,7 +17,7 @@ func main() {
 }
 
 ```
-into the following embedded Gist!
+into the embedded Gist!
 
 <img width="712" alt="screenshot 2018-07-09 16 52 12" src="https://user-images.githubusercontent.com/21333876/42437569-764fc38e-8398-11e8-8ff9-a644fb652388.png">
 
