@@ -2,7 +2,8 @@ package markdown
 
 import (
 	"bufio"
-	"log"
+	"errors"
+	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -22,10 +23,10 @@ func New(filename string) *Markdown {
 	return &Markdown{Filename: filename}
 }
 
-func (m *Markdown) Parse() {
+func (m *Markdown) Parse() error {
 	f, err := os.Open(m.Filename)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer f.Close()
 
@@ -61,4 +62,33 @@ func (m *Markdown) Parse() {
 			Filename: filename,
 		})
 	}
+
+	if len(m.Snippets) == 0 {
+		return errors.New("code blocks not exist")
+	}
+	return nil
+}
+
+func (m *Markdown) Replace(urls ...string) error {
+	if len(m.Snippets) == 0 {
+		return errors.New("code blocks not exist")
+	}
+	if len(urls) != len(m.Snippets) {
+		return errors.New("the number of urls not match that of code blocks")
+	}
+
+	data, err := ioutil.ReadFile(m.Filename)
+	if err != nil {
+		return err
+	}
+	content := string(data)
+
+	for i, s := range m.Snippets {
+		strings.Replace(content, s.Content, urls[i], 1)
+	}
+
+	if err := ioutil.WriteFile(m.Filename, []byte(content), 0666); err != nil {
+		return err
+	}
+	return nil
 }
