@@ -7,19 +7,28 @@ import (
 	"strings"
 )
 
-type Snippet struct {
-	Filename string
-	Content  string
+type (
+	Markdown struct {
+		Filename string
+		Snippets []*Snippet
+	}
+	Snippet struct {
+		Filename string
+		Content  string
+	}
+)
+
+func New(filename string) *Markdown {
+	return &Markdown{Filename: filename}
 }
 
-func Parse(filename string) []Snippet {
-	f, err := os.Open(filename)
+func (m *Markdown) Parse() {
+	f, err := os.Open(m.Filename)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer f.Close()
 
-	var snippets []Snippet
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -47,11 +56,9 @@ func Parse(filename string) []Snippet {
 		for _, c := range code {
 			content += c
 		}
-		snippets = append(snippets, Snippet{
+		m.Snippets = append(m.Snippets, &Snippet{
 			Content:  content,
 			Filename: filename,
 		})
 	}
-
-	return snippets
 }

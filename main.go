@@ -18,8 +18,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	snippets := markdown.Parse("example.md")
-	for _, s := range snippets {
+	m := markdown.New("example.md")
+	m.Parse()
+	for _, s := range m.Snippets {
 		files := map[github.GistFilename]github.GistFile{
 			github.GistFilename(s.Filename): github.GistFile{
 				Content: &s.Content,
