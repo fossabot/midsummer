@@ -1,8 +1,6 @@
 package medium
 
 import (
-	"io/ioutil"
-
 	medium "github.com/Medium/medium-sdk-go"
 	"github.com/micnncim/mediumorphose/markdown"
 	"github.com/skratchdot/open-golang/open"
@@ -17,15 +15,16 @@ func New(token string) *Medium {
 }
 
 func (m *Medium) Publish(md *markdown.Markdown) error {
-	data, err := ioutil.ReadFile(md.Filename)
+	u, err := m.Client.GetUser("")
 	if err != nil {
 		return err
 	}
 
 	p, err := m.Client.CreatePost(medium.CreatePostOptions{
+		UserID:        u.ID,
 		Title:         md.Title,
 		ContentFormat: medium.ContentFormatMarkdown,
-		Content:       string(data),
+		Content:       md.Content,
 		PublishStatus: medium.PublishStatusDraft,
 	})
 	if err != nil {
