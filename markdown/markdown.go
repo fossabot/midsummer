@@ -76,9 +76,6 @@ func (m *Markdown) ParseTitle() error {
 		m.Title = header
 	}
 
-	// omit header (title) and buffer new line
-	m.Content = strings.Join(content[2:], "\n")
-
 	return nil
 }
 
