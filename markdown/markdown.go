@@ -12,7 +12,7 @@ type Snippet struct {
 	Content  string
 }
 
-func CreateSnippets(filename string) []Snippet {
+func Parse(filename string) []Snippet {
 	f, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
