@@ -13,7 +13,7 @@ import (
 
 func main() {
 	token := os.Getenv("GITHUB_ACCESS_TOKEN")
-	g, err := gist.NewClient(token)
+	g, err := gist.New(token)
 	if err != nil {
 		log.Fatal(err)
 	}

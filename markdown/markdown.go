@@ -10,6 +10,7 @@ import (
 
 type (
 	Markdown struct {
+		Title    string
 		Filename string
 		Snippets []*Snippet
 	}
@@ -91,5 +92,30 @@ func (m *Markdown) Replace(urls ...string) error {
 	if err := ioutil.WriteFile(m.Filename, []byte(content), 0666); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (m *Markdown) ParseTitle() error {
+	f, err := os.Open(m.Filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	if !scanner.Scan() {
+		return errors.New("header not exist")
+	}
+	header := scanner.Text()
+	if !strings.HasPrefix(header, "# ") {
+		return errors.New("header is not valid. should start with `# `")
+	}
+
+	header = strings.TrimLeft(header, "# ")
+	m.Title = header
+
+	content := strings.Replace()
+	f.Write([]byte)
+
 	return nil
 }
