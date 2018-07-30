@@ -74,7 +74,7 @@ func (m *Markdown) Replace(urls ...string) error {
 		return errors.New("code blocks not exist")
 	}
 	if len(urls) != len(m.Snippets) {
-		return errors.New("the number of urls not match that of code blocks")
+		return errors.New("the number of URLs not match that of code blocks")
 	}
 
 	data, err := ioutil.ReadFile(m.Filename)
@@ -84,7 +84,8 @@ func (m *Markdown) Replace(urls ...string) error {
 	content := string(data)
 
 	for i, s := range m.Snippets {
-		strings.Replace(content, s.Content, urls[i], 1)
+		block := "```" + s.Filename + "\n" + s.Content + "\n```"
+		content = strings.Replace(content, block, urls[i], 1)
 	}
 
 	if err := ioutil.WriteFile(m.Filename, []byte(content), 0666); err != nil {
