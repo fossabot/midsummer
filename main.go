@@ -13,18 +13,17 @@ import (
 	"github.com/micnncim/mediumorphose/medium"
 )
 
-var conf config.Config
-
-const cnfFile string = "~/.config/midsummer.toml"
+var cnf config.Config
 
 func init() {
-	if err := conf.LoadConfig(cnfFile); err != nil {
-		log.Fatal("GitHub and Medium access tokens are required")
+	if err := cnf.LoadConfig(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
 
 func main() {
-	g, err := gist.New(os.Getenv("GITHUB_ACCESS_TOKEN"))
+	g, err := gist.New(cnf.GistConfig.Token)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,7 +61,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mid := medium.New(os.Getenv("MEDIUM_ACCESS_TOKEN"))
+	mid := medium.New(cnf.MediumConfig.Token)
 	if err := mid.Publish(md); err != nil {
 		log.Fatal(err)
 	}
