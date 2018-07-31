@@ -54,20 +54,26 @@ func (cnf *Config) LoadConfig() error {
 		return fmt.Errorf("cannot create config file: %v", err)
 	}
 
-	var ghToken string
-	fmt.Print("GitHub ACCESS TOKEN> ")
-	fmt.Scan(&ghToken)
-	if ghToken == "" {
-		return errors.New("GitHub access token is required")
+	ghToken, err := scanToken("GitHub")
+	if err != nil {
+		return err
 	}
-	var midToken string
-	fmt.Print("Medium ACCESS TOKEN> ")
-	fmt.Scan(&midToken)
-	if midToken == "" {
-		return errors.New("Medium access token is required")
+	midToken, err := scanToken("Medium")
+	if err != nil {
+		return err
 	}
 	cnf.GistConfig.Token = ghToken
 	cnf.MediumConfig.Token = midToken
 
 	return toml.NewEncoder(f).Encode(cnf)
+}
+
+func scanToken(appname string) (string, error) {
+	fmt.Print(appname + " Access Token> ")
+	var token string
+	fmt.Scan(&token)
+	if token == "" {
+		return "", errors.New(appname + " access token is required")
+	}
+	return token, nil
 }
