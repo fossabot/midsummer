@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -28,7 +29,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	md, err := markdown.New("example.md")
+	if len(os.Args) != 2 {
+		log.Fatal(errors.New("invalid args"))
+	}
+
+	md, err := markdown.New(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}
