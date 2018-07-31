@@ -2,23 +2,38 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/google/go-github/github"
+	"github.com/micnncim/mediumorphose/config"
 	"github.com/micnncim/mediumorphose/gist"
 	"github.com/micnncim/mediumorphose/markdown"
 	"github.com/micnncim/mediumorphose/medium"
 )
 
+var cnf config.Config
+
+func init() {
+	if err := cnf.LoadConfig(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
 func main() {
-	g, err := gist.New(os.Getenv("GITHUB_ACCESS_TOKEN"))
+	g, err := gist.New(cnf.GistConfig.Token)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	md, err := markdown.New("example.md")
+	if len(os.Args) != 2 {
+		log.Fatal(errors.New("invalid args"))
+	}
+
+	md, err := markdown.New(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,7 +66,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mid := medium.New(os.Getenv("MEDIUM_ACCESS_TOKEN"))
+	mid := medium.New(cnf.MediumConfig.Token)
 	if err := mid.Publish(md); err != nil {
 		log.Fatal(err)
 	}
