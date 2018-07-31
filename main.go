@@ -7,10 +7,21 @@ import (
 	"os"
 
 	"github.com/google/go-github/github"
+	"github.com/micnncim/mediumorphose/config"
 	"github.com/micnncim/mediumorphose/gist"
 	"github.com/micnncim/mediumorphose/markdown"
 	"github.com/micnncim/mediumorphose/medium"
 )
+
+var conf config.Config
+
+const cnfFile string = "~/.config/midsummer.toml"
+
+func init() {
+	if err := conf.LoadConfig(cnfFile); err != nil {
+		log.Fatal("GitHub and Medium access tokens are required")
+	}
+}
 
 func main() {
 	g, err := gist.New(os.Getenv("GITHUB_ACCESS_TOKEN"))
